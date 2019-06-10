@@ -2,7 +2,7 @@
 Regular hexagonal widget class defined by its center position and a radius.
 """
 
-from kivy.graphics import Mesh
+from kivy.graphics import Mesh, Color, Line
 from kivy.graphics.tesselator import Tesselator
 from kivy.uix.widget import Widget
 from math import sin, cos, radians
@@ -42,8 +42,13 @@ class HexTile(Widget):
         if not tess.tesselate():
             raise ValueError('Unable to tesselate.')
 
-        for vertices, indices in tess.meshes:
-            self.canvas.add(Mesh(vertices=vertices, indices=indices, mode='triangle_fan'))
+        with self.canvas:
+            Color(.5, 0, 0)
+            for vertices, indices in tess.meshes:
+                Mesh(vertices=vertices, indices=indices, mode='triangle_fan')
+
+            Color(.8, 0, 0)
+            Line(points=self._polygon + self._polygon[:2], width=1.2)
 
     def collide_point(self, x, y):
         x, y = self.to_local(x, y)
