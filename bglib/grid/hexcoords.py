@@ -8,11 +8,22 @@ class HexCoords:
     """
     _Neighbors = ((+1, 0), (-1, 0), (0, +1), (0, -1), (+1, -1), (-1, +1))
 
+    __slots__ = ('_q', '_r')  # save some memory by avoiding __dict__
+
     def __init__(self, q, r, s=None):
         if s is not None and q + r + s != 0:
             raise ValueError('Invalid coordinates: q+r+s not equal to zero.')
         self._q = q
         self._r = r
+
+    def __getitem__(self, index):
+        return (self._q, self._r, self.s)[index]
+
+    def __iter__(self):
+        return iter((self._q, self._r, self.s))
+
+    def __hash__(self):
+        return hash((self._q, self._r))
 
     @property
     def q(self):
@@ -36,6 +47,16 @@ class HexCoords:
     @property
     def neighbors(self):
         return [self + n for n in self.__class__._Neighbors]
+
+    def rotate(self, n=+1, rot_center=None):
+        """ n=+1 means 1 step (60 degrees) in clockwise direction """
+        if rot_center is None:
+            rot_center = HexCoords(0, 0)
+        rel_coords = self - rot_center
+        sign = (-1) ** abs(n)
+        # shift coordinates n steps to the right
+        newcoords = [sign * rel_coords[(i - n) % 3] for i in range(3)]
+        return HexCoords(*newcoords) + rot_center
 
     def __repr__(self):
         return f'HexCoords({self.q}, {self.r}, {self.s})'
