@@ -75,3 +75,19 @@ def test_neighbors():
     for coords in [(-2, 1, 1), (-4, 1, 3), (-3, 2, 1), (-3, 0, 3), (-2, 0, 2), (-4, 2, 2)]:
         assert HexCoords(*coords) in c.neighbors
         assert c.distance(HexCoords(*coords)) == 1
+
+
+def test_iter():
+    hc = HexCoords(-4, 1, 3)
+    for number, coord in zip([-4, 1, 3], hc):
+        assert number == coord
+
+
+def test_rotate():
+    hc = HexCoords(+2, +1, -3)
+    assert hc.rotate(0) == hc == hc.rotate(6) == hc.rotate(-6)
+    assert hc.rotate(1) == hc.rotate(-5) == HexCoords(+3, -2, -1)
+    assert hc.rotate(2) == hc.rotate(-4) == HexCoords(+1, -3, +2)
+    assert hc.rotate(3) == hc.rotate(-3) == HexCoords(-2, -1, +3) == -hc
+    assert hc.rotate(4) == hc.rotate(-2) == HexCoords(-3, +2, +1) == -hc.rotate(1)
+    assert hc.rotate(5) == hc.rotate(-1) == HexCoords(-1, +3, -2) == -hc.rotate(2)
