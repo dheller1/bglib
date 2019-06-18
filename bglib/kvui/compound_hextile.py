@@ -3,6 +3,9 @@ from bglib.kvui.hextile import HexTile
 from kivy.uix.widget import Widget
 from math import sqrt
 
+from bglib.grid.tilemap import TileMap, HexShapedTileMap
+from bglib.grid.hexcoords import HexCoords
+
 
 class HexagonalCompoundHexTile(Widget):
     """ Compound tile of multiple HexTiles arranged in a 'hexagonal' pattern:
@@ -40,7 +43,34 @@ class HexagonalCompoundHexTile(Widget):
         print(f'Added {len(self.children)} tiles.')
 
 
+_sqrt3 = sqrt(3)
+
+
+class TileMapWidget(Widget):
+    def __init__(self, tile_radius, tilemap, **kwargs):
+        super().__init__(**kwargs)
+        self._tilemap = tilemap
+        self._tile_radius = tile_radius
+        for coords, tile in self._tilemap.items():
+            self.add_widget(HexTile(radius=tile_radius, pos=self.hex_to_pixel(coords)))
+
+    def hex_to_pixel(self, coords):
+        """ :param coords: HexCoords instance"""
+        x = self.x + self._tile_radius * 1.5 * coords.q
+        y = self.y + self._tile_radius * _sqrt3 * (0.5 * coords.q + coords.r)
+        return x, y
+
+
 if __name__ == '__main__':
     from kivy.base import runTouchApp
     from kivy.core.window import Window
-    runTouchApp(HexagonalCompoundHexTile(radius=50, repetitions=2, pos=(Window.size[0]/2, Window.size[1]/2)))
+    #runTouchApp(HexagonalCompoundHexTile(radius=20, repetitions=4, pos=(Window.size[0]/2, Window.size[1]/2)))
+
+    h2 = HexShapedTileMap(2)
+    gp = TileMap()
+    gp.add_tilemap(h2)
+    for offset in [(3, -5), (5, -2), (2, 3), (-3, 5), (-5, 2), (-2, -3)]:
+        gp.add_tilemap(h2, offset)
+
+    m = HexShapedTileMap(2, 'empty')
+    runTouchApp(TileMapWidget(tile_radius=20, tilemap=gp, pos=(Window.size[0]/2, Window.size[1]/2)))

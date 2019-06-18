@@ -43,11 +43,11 @@ class HexTile(Widget):
             raise ValueError('Unable to tesselate.')
 
         with self.canvas:
-            Color(.5, 0, 0)
+            Color(.1, .1, .1)
             for vertices, indices in tess.meshes:
                 Mesh(vertices=vertices, indices=indices, mode='triangle_fan')
 
-            Color(.8, 0, 0)
+            Color(.46, .46, .6)
             Line(points=self._polygon + self._polygon[:2], width=1.2)
 
     def collide_point(self, x, y):
