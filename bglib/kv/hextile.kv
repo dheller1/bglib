@@ -1,0 +1,16 @@
+#:kivy 1.10.1
+
+<HexTile>:
+    canvas:
+        Color:
+            rgba: (.3, .3, .3, 1) if self.is_hovered else (.2, .2, .2, 1)
+        Mesh:
+            vertices: self.vertices
+            indices: self.indices
+            mode: 'triangle_fan'
+
+        Color:
+            rgba: (.66, .66, .9, 1) if self.is_hovered else (.46, .46, .6, 1)
+        Line:
+            width: 1.2
+            points: self.polygon + self.polygon[:2]

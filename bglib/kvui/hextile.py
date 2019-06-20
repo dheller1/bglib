@@ -4,8 +4,10 @@ Regular hexagonal widget class defined by its center position and a radius.
 
 from kivy.graphics import Mesh, Color, Line
 from kivy.graphics.tesselator import Tesselator
+from kivy.properties import ListProperty, ObjectProperty
 from kivy.uix.widget import Widget
 from math import sin, cos, radians
+from bglib.kvui.behavior.hoverable import HoverableBehavior
 
 
 def _point_inside_polygon(x, y, poly):
@@ -28,34 +30,43 @@ def _point_inside_polygon(x, y, poly):
     return inside
 
 
-class HexTile(Widget):
+class HexTile(Widget, HoverableBehavior):
+    polygon = ListProperty([])
+    tesselator = ObjectProperty(Tesselator())
+    vertices = ListProperty([])
+    indices = ListProperty([])
+
     def __init__(self, radius, **kwargs):
         super().__init__(**kwargs)
-
-        self._polygon = []
         for alpha in (0, 60, 120, 180, 240, 300):
-            self._polygon.append(cos(radians(alpha)) * radius + self.x)
-            self._polygon.append(sin(radians(alpha)) * radius + self.y)
+            self.polygon.append(cos(radians(alpha)) * radius + self.x)
+            self.polygon.append(sin(radians(alpha)) * radius + self.y)
 
-        tess = Tesselator()
-        tess.add_contour(self._polygon)
-        if not tess.tesselate():
+        self.tesselator.add_contour(self.polygon)
+        if not self.tesselator.tesselate():
             raise ValueError('Unable to tesselate.')
 
-        with self.canvas:
-            Color(.1, .1, .1)
-            for vertices, indices in tess.meshes:
-                Mesh(vertices=vertices, indices=indices, mode='triangle_fan')
+        self.vertices, self.indices = self.tesselator.meshes[0]
 
-            Color(.46, .46, .6)
-            Line(points=self._polygon + self._polygon[:2], width=1.2)
+        #with self.canvas:
+        #    Color(.1, .1, .1)
+        #    for vertices, indices in tess.meshes:
+        #        Mesh(vertices=vertices, indices=indices, mode='triangle_fan')
+
+            #Color(.46, .46, .6)
+            #Line(points=self._polygon + self._polygon[:2], width=1.2)
 
     def collide_point(self, x, y):
         x, y = self.to_local(x, y)
-        return _point_inside_polygon(x, y, self._polygon)
+        return _point_inside_polygon(x, y, self.polygon)
 
 
 if __name__ == '__main__':
     from kivy.base import runTouchApp
     from kivy.core.window import Window
-    runTouchApp(HexTile(radius=100, pos=(Window.size[0]/2, Window.size[1]/2)))
+    from kivy.factory import Factory
+    from kivy.lang import Builder
+    from bglib.util.resource import get_kv
+    Builder.load_file(get_kv('hextile.kv'))
+    Factory.register('HexTile', HexTile)
+    runTouchApp(HexTile(radius=100, pos=(Window.size[0]/2, Window.size[1]/2), size=(100, 100)))
