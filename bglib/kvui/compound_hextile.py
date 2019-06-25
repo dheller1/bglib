@@ -51,14 +51,39 @@ class TileMapWidget(Widget):
         super().__init__(**kwargs)
         self._tilemap = tilemap
         self._tile_radius = tile_radius
+        self._tilewidgets = dict()
+
+        self._last_hovered_widget = None
         for coords, tile in self._tilemap.items():
-            self.add_widget(HexTile(radius=tile_radius, pos=self.hex_to_pixel(coords)))
+            widget = HexTile(radius=tile_radius, pos=self.hex_to_pixel(coords))
+            self._tilewidgets[coords] = widget
+            self.add_widget(widget)
+        Window.bind(mouse_pos=self.on_mouse_pos)
 
     def hex_to_pixel(self, coords):
         """ :param coords: HexCoords instance"""
         x = self.x + self._tile_radius * 1.5 * coords.q
         y = self.y + self._tile_radius * _sqrt3 * (0.5 * coords.q + coords.r)
         return x, y
+
+    def pixel_to_hex(self, coords):
+        """ :param coords: (x,y) screen coordinates"""
+        px, py = coords[0] - self.x, coords[1] - self.y
+        qfloat = 2./3 * px / self._tile_radius
+        rfloat = (-1./3 * px + _sqrt3/3 * py) / self._tile_radius
+        return HexCoords.round(qfloat, rfloat)
+
+    def on_mouse_pos(self, *args):
+        if not self.get_root_window():
+            return  # nothing to do if not on screen
+        pos = self.to_widget(*args[1])
+        hexcoords = self.pixel_to_hex(pos)
+        hovered_tile = self._tilewidgets.get(hexcoords)
+        if hovered_tile:
+            hovered_tile.is_hovered = True
+            if self._last_hovered_widget not in (None, hovered_tile):
+                self._last_hovered_widget.is_hovered = False
+            self._last_hovered_widget = hovered_tile
 
 
 if __name__ == '__main__':

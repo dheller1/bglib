@@ -2,12 +2,10 @@
 Regular hexagonal widget class defined by its center position and a radius.
 """
 
-from kivy.graphics import Mesh, Color, Line
 from kivy.graphics.tesselator import Tesselator
-from kivy.properties import ListProperty, ObjectProperty
+from kivy.properties import ListProperty, ObjectProperty, BooleanProperty
 from kivy.uix.widget import Widget
 from math import sin, cos, radians
-from bglib.kvui.behavior.hoverable import HoverableBehavior
 
 
 def _point_inside_polygon(x, y, poly):
@@ -30,11 +28,12 @@ def _point_inside_polygon(x, y, poly):
     return inside
 
 
-class HexTile(Widget, HoverableBehavior):
+class HexTile(Widget):
     polygon = ListProperty([])
     tesselator = ObjectProperty(Tesselator())
     vertices = ListProperty([])
     indices = ListProperty([])
+    is_hovered = BooleanProperty(False)
 
     def __init__(self, radius, **kwargs):
         super().__init__(**kwargs)

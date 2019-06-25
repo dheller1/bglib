@@ -58,6 +58,23 @@ class HexCoords:
         newcoords = [sign * rel_coords[(i - n) % 3] for i in range(3)]
         return HexCoords(*newcoords) + rot_center
 
+    @staticmethod
+    def round(qfloat, rfloat):
+        """ Rounds float coordinates to the nearest integer hex.
+        :returns: HexCoords instance with integer coordinates. """
+        sfloat = -qfloat - rfloat
+        q_int, r_int, s_int = (round(c) for c in (qfloat, rfloat, sfloat))
+        deltas = abs(q_int - qfloat), abs(r_int - rfloat), abs(s_int - sfloat)
+
+        # adjust largest delta
+        if deltas[0] >= max(deltas[1], deltas[2]):
+            q_int = -r_int - s_int
+        elif deltas[1] >= max(deltas[0], deltas[2]):
+            r_int = -q_int - s_int
+        elif deltas[2] >= max(deltas[0], deltas[1]):
+            s_int = -q_int - r_int
+        return HexCoords(q_int, r_int, s_int)
+
     def __repr__(self):
         return f'HexCoords({self.q}, {self.r}, {self.s})'
 
