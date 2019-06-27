@@ -83,7 +83,17 @@ class TileMapWidget(Widget):
             hovered_tile.is_hovered = True
             if self._last_hovered_widget not in (None, hovered_tile):
                 self._last_hovered_widget.is_hovered = False
+
+            if hovered_tile is not self._last_hovered_widget:
+                # remove and re-add to get in on top of other widgets
+                self.remove_widget(hovered_tile)
+                self.add_widget(hovered_tile, index=0)
+
             self._last_hovered_widget = hovered_tile
+        else:
+            if self._last_hovered_widget:
+                self._last_hovered_widget.is_hovered = False
+                self._last_hovered_widget = None
 
 
 if __name__ == '__main__':
