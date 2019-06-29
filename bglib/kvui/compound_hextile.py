@@ -1,5 +1,6 @@
 from bglib.kvui.hextile import HexTile
 
+from kivy.core.window import Window
 from kivy.uix.widget import Widget
 from math import sqrt
 
@@ -96,16 +97,16 @@ class TileMapWidget(Widget):
                 self._last_hovered_widget = None
 
 
+from kivy.factory import Factory
+from kivy.lang import Builder
+from bglib.util.resource import get_kv
+Builder.load_file(get_kv('hextile.kv'))
+Factory.register('HexTile', HexTile)
+
+
 if __name__ == '__main__':
     from kivy.base import runTouchApp
-    from kivy.core.window import Window
     #runTouchApp(HexagonalCompoundHexTile(radius=20, repetitions=4, pos=(Window.size[0]/2, Window.size[1]/2)))
-
-    from kivy.factory import Factory
-    from kivy.lang import Builder
-    from bglib.util.resource import get_kv
-    Builder.load_file(get_kv('hextile.kv'))
-    Factory.register('HexTile', HexTile)
 
     h2 = HexShapedTileMap(2)
     gp = TileMap()
