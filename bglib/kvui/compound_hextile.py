@@ -63,14 +63,14 @@ class TileMapWidget(Widget):
     def hex_to_pixel(self, coords):
         """ :param coords: HexCoords instance"""
         x = self.x + self._tile_radius * 1.5 * coords.q
-        y = self.y + self._tile_radius * _sqrt3 * (0.5 * coords.q + coords.r)
+        y = self.y - self._tile_radius * _sqrt3 * (0.5 * coords.q + coords.r)
         return x, y
 
     def pixel_to_hex(self, coords):
         """ :param coords: (x,y) screen coordinates"""
         px, py = coords[0] - self.x, coords[1] - self.y
         qfloat = 2./3 * px / self._tile_radius
-        rfloat = (-1./3 * px + _sqrt3/3 * py) / self._tile_radius
+        rfloat = (-1./3 * px - _sqrt3/3 * py) / self._tile_radius
         return HexCoords.round(qfloat, rfloat)
 
     def on_mouse_pos(self, *args):
