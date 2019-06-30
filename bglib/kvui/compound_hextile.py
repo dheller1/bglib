@@ -48,17 +48,20 @@ _sqrt3 = sqrt(3)
 
 
 class TileMapWidget(Widget):
-    def __init__(self, tile_radius, tilemap, **kwargs):
+    def __init__(self, tile_radius, tilemap, factory=None, **kwargs):
         super().__init__(**kwargs)
         self._tilemap = tilemap
         self._tile_radius = tile_radius
         self._tilewidgets = dict()
 
         self._last_hovered_widget = None
-        for coords, tile in self._tilemap.items():
-            widget = HexTile(radius=tile_radius, pos=self.hex_to_pixel(coords))
-            self._tilewidgets[coords] = widget
-            self.add_widget(widget)
+        for coords, factory_args in self._tilemap.items():
+            if factory:
+                tilewidget = factory(radius=tile_radius, pos=self.hex_to_pixel(coords), **factory_args)
+            else:
+                tilewidget = HexTile(radius=tile_radius, pos=self.hex_to_pixel(coords))
+            self._tilewidgets[coords] = tilewidget
+            self.add_widget(tilewidget)
         Window.bind(mouse_pos=self.on_mouse_pos)
 
     def hex_to_pixel(self, coords):
