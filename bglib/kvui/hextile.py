@@ -37,6 +37,7 @@ class HexTile(Widget):
 
     def __init__(self, radius, **kwargs):
         super().__init__(**kwargs)
+        self._radius = radius
         for alpha in (0, 60, 120, 180, 240, 300):
             self.polygon.append(cos(radians(alpha)) * radius + self.x)
             self.polygon.append(sin(radians(alpha)) * radius + self.y)

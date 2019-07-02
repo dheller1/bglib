@@ -8,6 +8,7 @@ class Game:
     rendered in any fashion. """
     def __init__(self):
         self.table = None
+        self.players = []
 
 
 class GameTable:
@@ -26,7 +27,14 @@ class Actor:
 
 class Player(Actor):
     """ One of the game participants in a classical sense, normally controlled by a Human. """
-    pass
+    def __init__(self, name):
+        self.name = name
+
+    def __repr__(self):
+        return f'Player({self.name})'
+
+    def __str__(self):
+        return self.name
 
 
 class PhysicalEntity:
@@ -66,3 +74,12 @@ class Slot:
     def __init__(self, owner, rect):
         self._owner = owner
         self._rect = rect
+
+
+class Tile:
+    """ Single cell in a form of regular map (e.g. hex or quad grid), usually defined by a type and its content. """
+    def __init__(self, name):
+        self._name = name
+
+    def __repr__(self):
+        return f'Tile({self._name})'
