@@ -1,16 +1,16 @@
 class DecisionOption:
-    def __init__(self, name='Unnamed option', data=None, description=None, icon=None, image=None):
-        self.name = name
+    def __init__(self, text='Unnamed option', data=None, description=None, icon=None, image=None):
+        self.text = text
         self.description = description
         self.icon = icon
         self.image = image
         self.data = data
 
     def __repr__(self):
-        return f'DecisionOption({self.name})'
+        return f'DecisionOption({self.text})'
 
     def __str__(self):
-        return self.name
+        return self.text
 
 
 class Decision:
@@ -18,7 +18,8 @@ class Decision:
     Decided = 1
     Aborted = 2
 
-    def __init__(self, owner, options, callback=None):
+    def __init__(self, text, owner, options, callback=None):
+        self.text = text
         self.owner = owner
         self.options = options
         self.callback = callback
@@ -29,18 +30,23 @@ class Decision:
         assert self.status == Decision.Pending
         self.status = Decision.Aborted
 
-    def decide(self):
-        assert self.status == Decision.Pending
-        self.picked_option = self.options[0]  # TODO: implement properly
+    def choose(self, option):
+        assert option in self.options
+        self.picked_option = option.data
         self.status = Decision.Decided
+        print('Chose {}'.format(option.text))
         if self.callback:
             self.callback(self)
+
+    def decide(self):
+        assert self.status == Decision.Pending
+        self.choose(self.options[0])  # TODO: implement properly
 
     def execute(self):
         self.decide()
 
     def run_commandline(self):
-        print(f'{self.owner}, please choose:')
+        print(f'{self.owner}: {self.text}')
         for i, opt in enumerate(self.options):
             print(' [{}] {}'.format(i+1, opt))
 
